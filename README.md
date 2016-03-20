@@ -42,7 +42,7 @@ $app->register(Arubacao\BasicAuth\BasicGuardServiceProvider::class);
 ## Usage
 Open your `config/auth.php` config file and in place of driver under any of your guards, just add the `basic` as your driver and you're all set. Make sure you also set `provider` for the guard to communicate with your database.
 
-**Note:** In Lumen you first have to copy the config file from the directory `vendor/laravel/lumen-framework/config/app.php`, create a `config` folder in your root folder and finally paste the copied file there.
+**Note:** In Lumen you first have to copy the config file from the directory `vendor/laravel/lumen-framework/config/auth.php`, create a `config` folder in your root folder and finally paste the copied file there.
 
 ### Setup Guard Driver
 
