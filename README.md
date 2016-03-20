@@ -92,7 +92,7 @@ class NiceController extends Controller
 Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
 
 ## Contributing
-Please see [CONTRIBUTING](CONTRIBUTING.md) and [CONDUCT](CONDUCT.md) for details.
+Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 Any issues, feedback, suggestions or questions please use issue tracker [here](https://github.com/arubacao/http-basic-auth-guard/issues).
 
@@ -101,3 +101,18 @@ If you discover any security related issues, please email arubacao@gmail.com ins
 
 ## License
 The MIT License (MIT).
+
+[ico-version]: https://img.shields.io/packagist/v/arubacao/http-basic-auth-guard.svg?style=flat-square
+[ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
+[ico-travis]: https://img.shields.io/travis/arubacao/http-basic-auth-guard/master.svg?style=flat-square
+[ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/arubacao/http-basic-auth-guard.svg?style=flat-square
+[ico-code-quality]: https://img.shields.io/scrutinizer/g/arubacao/http-basic-auth-guard.svg?style=flat-square
+[ico-downloads]: https://img.shields.io/packagist/dt/arubacao/http-basic-auth-guard.svg?style=flat-square
+
+[link-packagist]: https://packagist.org/packages/arubacao/http-basic-auth-guard
+[link-travis]: https://travis-ci.org/arubacao/http-basic-auth-guard
+[link-scrutinizer]: https://scrutinizer-ci.com/g/arubacao/http-basic-auth-guard/code-structure
+[link-code-quality]: https://scrutinizer-ci.com/g/arubacao/http-basic-auth-guard
+[link-downloads]: https://packagist.org/packages/arubacao/http-basic-auth-guard
+[link-author]: https://github.com/arubacao
+[link-contributors]: ../../contributors
