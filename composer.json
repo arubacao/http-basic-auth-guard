@@ -1,0 +1,39 @@
+{
+    "name": "arubacao/http-basic-auth-guard",
+    "description": "HTTP Basic Auth Guard for Laravel and Lumen",
+    "keywords": ["arubacao", "laravel http basic auth guard", "lumen http basic auth guard", "http basic auth guard", "http basic authentication"],
+    "homepage": "https://github.com/arubacao/http-basic-auth-guard",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Christopher Lass",
+            "email": "arubacao@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php" : ">=5.5.9"
+    },
+    "require-dev": {
+        "phpunit/phpunit" : "4.*",
+        "squizlabs/php_codesniffer": "~2.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Arubacao\\BasicAuth\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Arubacao\\BasicAuth\\Test\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}
