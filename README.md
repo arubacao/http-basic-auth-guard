@@ -22,7 +22,7 @@ Laravel 5.2: [Authentication](https://laravel.com/docs/5.2/authentication)
 
 **Note:** For Laravel you can use HTTP Basic Auth out-of-the-box with the `session` driver: [Link](https://laravel.com/docs/5.2/authentication#stateless-http-basic-authentication).
 
- **But the `session` driver does NOT work for Lumen 5.2, so there is no http basic auth out-of-the-box for Lumen 5.2**
+ **But the `session` driver does NOT work for Lumen 5.2, so there is no HTTP Basic Auth out-of-the-box for Lumen 5.2**
 
 ### Add the Service Provider
 #### Laravel

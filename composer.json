@@ -1,7 +1,7 @@
 {
     "name": "arubacao/http-basic-auth-guard",
     "description": "HTTP Basic Auth Guard for Laravel and Lumen",
-    "keywords": ["arubacao", "laravel http basic auth guard", "lumen http basic auth guard", "http basic auth guard", "http basic authentication"],
+    "keywords": ["laravel http basic auth guard", "lumen http basic auth guard", "http basic auth guard", "http basic authentication"],
     "homepage": "https://github.com/arubacao/http-basic-auth-guard",
     "license": "MIT",
     "authors": [
