@@ -70,7 +70,9 @@ class BasicGuard implements Guard, SupportsBasicAuth
             return $this->user;
         }
 
-        return null;
+        $this->onceBasic();
+
+        return $this->user;
     }
 
     /**
