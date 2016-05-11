@@ -47,8 +47,9 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Create a new authentication guard.
      *
-     * @param  \Illuminate\Contracts\Auth\UserProvider  $provider
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Contracts\Auth\UserProvider $provider
+     * @param \Illuminate\Http\Request                $request
+     *
      * @return void
      */
     public function __construct(UserProvider $provider, Request $request)
@@ -66,7 +67,7 @@ class BasicGuard implements Guard, SupportsBasicAuth
     {
         // If we've already retrieved the user for the current request we can just
         // return it back immediately.
-        if (! is_null($this->user)) {
+        if (!is_null($this->user)) {
             return $this->user;
         }
 
@@ -78,7 +79,8 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Log a user into the application without sessions or cookies.
      *
-     * @param  array  $credentials
+     * @param array $credentials
+     *
      * @return bool
      */
     public function once(array $credentials = [])
@@ -95,7 +97,8 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Validate a user's credentials.
      *
-     * @param  array  $credentials
+     * @param array $credentials
+     *
      * @return bool
      */
     public function validate(array $credentials = [])
@@ -106,8 +109,9 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Attempt to authenticate using HTTP Basic Auth.
      *
-     * @param  string  $field
-     * @param  array  $extraConditions
+     * @param string $field
+     * @param array  $extraConditions
+     *
      * @return \Symfony\Component\HttpFoundation\Response|null
      */
     public function basic($field = 'email', $extraConditions = [])
@@ -129,15 +133,16 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Perform a stateless HTTP Basic login attempt.
      *
-     * @param  string  $field
-     * @param  array  $extraConditions
+     * @param string $field
+     * @param array  $extraConditions
+     *
      * @return \Symfony\Component\HttpFoundation\Response|null
      */
     public function onceBasic($field = 'email', $extraConditions = [])
     {
         $credentials = $this->getBasicCredentials($this->getRequest(), $field);
 
-        if (! $this->once(array_merge($credentials, $extraConditions))) {
+        if (!$this->once(array_merge($credentials, $extraConditions))) {
             return $this->getBasicResponse();
         }
     }
@@ -145,14 +150,15 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Attempt to authenticate using basic authentication.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  string  $field
-     * @param  array  $extraConditions
+     * @param \Illuminate\Http\Request $request
+     * @param string                   $field
+     * @param array                    $extraConditions
+     *
      * @return bool
      */
     protected function attemptBasic(Request $request, $field, $extraConditions = [])
     {
-        if (! $request->getUser()) {
+        if (!$request->getUser()) {
             return false;
         }
 
@@ -164,8 +170,9 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Get the credential array for a HTTP Basic request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  string  $field
+     * @param \Illuminate\Http\Request $request
+     * @param string                   $field
+     *
      * @return array
      */
     protected function getBasicCredentials(Request $request, $field)
@@ -188,9 +195,10 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Attempt to authenticate a user using the given credentials.
      *
-     * @param  array  $credentials
-     * @param  bool   $remember
-     * @param  bool   $login
+     * @param array $credentials
+     * @param bool  $remember
+     * @param bool  $login
+     *
      * @return bool
      */
     public function attempt(array $credentials = [], $remember = false, $login = true)
@@ -216,21 +224,23 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Determine if the user matches the credentials.
      *
-     * @param  mixed  $user
-     * @param  array  $credentials
+     * @param mixed $user
+     * @param array $credentials
+     *
      * @return bool
      */
     protected function hasValidCredentials($user, $credentials)
     {
-        return ! is_null($user) && $this->provider->validateCredentials($user, $credentials);
+        return !is_null($user) && $this->provider->validateCredentials($user, $credentials);
     }
 
     /**
      * Fire the attempt event with the arguments.
      *
-     * @param  array  $credentials
-     * @param  bool  $remember
-     * @param  bool  $login
+     * @param array $credentials
+     * @param bool  $remember
+     * @param bool  $login
+     *
      * @return void
      */
     protected function fireAttemptEvent(array $credentials, $remember, $login)
@@ -245,7 +255,8 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Register an authentication attempt event listener.
      *
-     * @param  mixed  $callback
+     * @param mixed $callback
+     *
      * @return void
      */
     public function attempting($callback)
@@ -258,8 +269,9 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Log a user into the application.
      *
-     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
-     * @param  bool  $remember
+     * @param \Illuminate\Contracts\Auth\Authenticatable $user
+     * @param bool                                       $remember
+     *
      * @return void
      */
     public function login(AuthenticatableContract $user, $remember = false)
@@ -276,8 +288,9 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Fire the login event if the dispatcher is set.
      *
-     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
-     * @param  bool  $remember
+     * @param \Illuminate\Contracts\Auth\Authenticatable $user
+     * @param bool                                       $remember
+     *
      * @return void
      */
     protected function fireLoginEvent($user, $remember = false)
@@ -290,14 +303,16 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Log the given user ID into the application.
      *
-     * @param  mixed  $id
-     * @param  bool   $remember
-     * @return \Illuminate\Contracts\Auth\Authenticatable
+     * @param mixed $id
+     * @param bool  $remember
+     *
      * @throws \Exception
+     *
+     * @return \Illuminate\Contracts\Auth\Authenticatable
      */
     public function loginUsingId($id, $remember = false)
     {
-        if($remember !== false) {
+        if ($remember !== false) {
             throw new \Exception('Lumen cannot remember login. No session support');
         }
 
@@ -309,12 +324,13 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Log the given user ID into the application without sessions or cookies.
      *
-     * @param  mixed  $id
+     * @param mixed $id
+     *
      * @return bool
      */
     public function onceUsingId($id)
     {
-        if (! is_null($user = $this->provider->retrieveById($id))) {
+        if (!is_null($user = $this->provider->retrieveById($id))) {
             $this->setUser($user);
 
             return true;
@@ -344,7 +360,6 @@ class BasicGuard implements Guard, SupportsBasicAuth
         // so they are no longer available as the user is no longer considered as
         // being signed into this application and should not be available here.
         $this->user = null;
-
     }
 
     /**
@@ -360,7 +375,8 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Set the event dispatcher instance.
      *
-     * @param  \Illuminate\Contracts\Events\Dispatcher  $events
+     * @param \Illuminate\Contracts\Events\Dispatcher $events
+     *
      * @return void
      */
     public function setDispatcher(Dispatcher $events)
@@ -381,7 +397,8 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Set the user provider used by the guard.
      *
-     * @param  \Illuminate\Contracts\Auth\UserProvider  $provider
+     * @param \Illuminate\Contracts\Auth\UserProvider $provider
+     *
      * @return void
      */
     public function setProvider(UserProvider $provider)
@@ -412,7 +429,8 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Set the current request instance.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return $this
      */
     public function setRequest(Request $request)
@@ -431,5 +449,4 @@ class BasicGuard implements Guard, SupportsBasicAuth
     {
         return $this->lastAttempted;
     }
-
 }

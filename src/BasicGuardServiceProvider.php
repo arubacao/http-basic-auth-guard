@@ -34,6 +34,5 @@ class BasicGuardServiceProvider extends ServiceProvider
             // Return an instance of Illuminate\Contracts\Auth\Guard...
             return $guard;
         });
-
     }
 }
