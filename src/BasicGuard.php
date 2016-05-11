@@ -67,7 +67,7 @@ class BasicGuard implements Guard, SupportsBasicAuth
     {
         // If we've already retrieved the user for the current request we can just
         // return it back immediately.
-        if (!is_null($this->user)) {
+        if (! is_null($this->user)) {
             return $this->user;
         }
 
@@ -142,7 +142,7 @@ class BasicGuard implements Guard, SupportsBasicAuth
     {
         $credentials = $this->getBasicCredentials($this->getRequest(), $field);
 
-        if (!$this->once(array_merge($credentials, $extraConditions))) {
+        if (! $this->once(array_merge($credentials, $extraConditions))) {
             return $this->getBasicResponse();
         }
     }
@@ -158,7 +158,7 @@ class BasicGuard implements Guard, SupportsBasicAuth
      */
     protected function attemptBasic(Request $request, $field, $extraConditions = [])
     {
-        if (!$request->getUser()) {
+        if (! $request->getUser()) {
             return false;
         }
 
@@ -231,7 +231,7 @@ class BasicGuard implements Guard, SupportsBasicAuth
      */
     protected function hasValidCredentials($user, $credentials)
     {
-        return !is_null($user) && $this->provider->validateCredentials($user, $credentials);
+        return ! is_null($user) && $this->provider->validateCredentials($user, $credentials);
     }
 
     /**
@@ -330,7 +330,7 @@ class BasicGuard implements Guard, SupportsBasicAuth
      */
     public function onceUsingId($id)
     {
-        if (!is_null($user = $this->provider->retrieveById($id))) {
+        if (! is_null($user = $this->provider->retrieveById($id))) {
             $this->setUser($user);
 
             return true;
