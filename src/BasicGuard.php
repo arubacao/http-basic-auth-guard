@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of Http Basic Auth Guard.
  *
@@ -22,6 +23,16 @@ use Illuminate\Http\Response;
 class BasicGuard implements Guard, SupportsBasicAuth
 {
     use GuardHelpers;
+
+    /**
+     * The name of the Guard.
+     *
+     * Corresponds to driver name in authentication configuration.
+     *
+     * @var string
+     * @todo
+     */
+//    protected $name;
 
     /**
      * The user we last attempted to retrieve.
@@ -123,10 +134,6 @@ class BasicGuard implements Guard, SupportsBasicAuth
      */
     public function basic($field = 'email', $extraConditions = [])
     {
-        if ($this->check()) {
-            return;
-        }
-
         // If a username is set on the HTTP basic request, we will return out without
         // interrupting the request lifecycle. Otherwise, we'll need to generate a
         // request indicating that the given credentials were invalid for login.
