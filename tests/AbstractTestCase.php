@@ -1,16 +1,13 @@
 <?php
 /**
  * This file is part of Http Basic Auth Guard.
- *  
+ *
  * (c) Christopher Lass <arubacao@gmail.com>
- *  
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
-
 namespace Arubacao\Tests\BasicAuth;
-
 
 use Arubacao\BasicAuth\BasicGuardServiceProvider;
 use GrahamCampbell\TestBench\AbstractPackageTestCase;
@@ -40,10 +37,10 @@ abstract class AbstractTestCase extends AbstractPackageTestCase
 //            '--realpath' => realpath(__DIR__ . '/../vendor/laravel/laravel/database/migrations'),
 //        ]);
         $this->artisan('migrate', [
-            '--realpath' => realpath(__DIR__ . '/database/migrations'),
+            '--realpath' => realpath(__DIR__.'/database/migrations'),
         ]);
 
-        $this->withFactories(realpath(__DIR__ . '/database/factories'));
+        $this->withFactories(realpath(__DIR__.'/database/factories'));
     }
 
     /**
@@ -59,7 +56,7 @@ abstract class AbstractTestCase extends AbstractPackageTestCase
         $app->config->set('auth.guards', [
             'api' => [
                 'driver' => 'basic',
-                'provider' => 'users'
+                'provider' => 'users',
             ],
         ]);
         $app->config->set('auth.users', [
