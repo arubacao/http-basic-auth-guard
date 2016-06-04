@@ -24,7 +24,7 @@ class AuthenticationTest extends AbstractTestCase
         }]);
         $this->json('GET', 'api/whatever', [], [
             'PHP_AUTH_USER' => $user->email,
-            'PHP_AUTH_PW' => null,
+            'PHP_AUTH_PW' => '',
         ])
             ->seeStatusCode(401);
     }
