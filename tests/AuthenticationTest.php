@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Arubacao\Tests\BasicAuth;
 
 class AuthenticationTest extends AbstractTestCase
@@ -46,14 +45,14 @@ class AuthenticationTest extends AbstractTestCase
     public function user_gets_ok_with_correct_credentials()
     {
         $user = factory(\App\User::class)->create([
-            'password' => bcrypt('123456')
+            'password' => bcrypt('123456'),
         ]);
         $this->app->router->get('api/whatever', ['middleware' => 'auth:api', function () {
             return 'YoYo!';
         }]);
         $this->json('GET', 'api/whatever', [], [
             'PHP_AUTH_USER' => $user->email,
-            'PHP_AUTH_PW' => '123456'
+            'PHP_AUTH_PW' => '123456',
         ])
             ->seeStatusCode(200);
     }
