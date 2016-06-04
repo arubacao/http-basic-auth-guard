@@ -16,7 +16,8 @@
     },
     "require-dev": {
         "phpunit/phpunit" : "4.*",
-        "squizlabs/php_codesniffer": "~2.3"
+        "graham-campbell/testbench": "^3.2",
+        "laravel/lumen" : "5.2.*"
     },
     "autoload": {
         "psr-4": {
@@ -25,7 +26,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Arubacao\\BasicAuth\\Test\\": "tests"
+            "Arubacao\\Tests\\BasicAuth\\": "tests"
         }
     },
     "scripts": {

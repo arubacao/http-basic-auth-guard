@@ -7,13 +7,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
-namespace Arubacao\Tests\BasicAuth;
-
-class ExampleTest extends AbstractTestCase
-{
-    public function testStuff()
-    {
-        $this->assertTrue(true);
-    }
-}
+$factory->define(App\User::class, function (Faker\Generator $faker) {
+    return [
+        'name' => $faker->name,
+        'email' => $faker->safeEmail,
+        'password' => bcrypt(str_random(10)),
+    ];
+});
