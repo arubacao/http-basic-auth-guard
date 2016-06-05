@@ -2,11 +2,9 @@
 
 Contributions are **welcome** and will be fully **credited**.
 
-We accept contributions via Pull Requests on [Github](https://github.com/irazasyed/jwt-auth-guard).
+We accept contributions via Pull Requests on [Github](https://github.com/arubacao/http-basic-auth-guard).
 
 ## Pull Requests
-
-- **[PSR-2 Coding Standard](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md)** - The easiest way to apply the conventions is to install [PHP Code Sniffer](http://pear.php.net/package/PHP_CodeSniffer).
 
 - **Add tests!** - Your patch won't be accepted if it doesn't have tests.
 
@@ -25,7 +23,7 @@ We accept contributions via Pull Requests on [Github](https://github.com/irazasy
 ## Running Tests
 
 ``` bash
-$ composer test
+$ phpunit
 ```
 
 **Happy coding**!
