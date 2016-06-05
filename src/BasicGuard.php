@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of Http Basic Auth Guard.
  *
@@ -8,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Arubacao\BasicAuth;
 
 use Illuminate\Auth\Events;
@@ -30,9 +30,8 @@ class BasicGuard implements Guard, SupportsBasicAuth
      * Corresponds to driver name in authentication configuration.
      *
      * @var string
-     * @todo
      */
-//    protected $name;
+    protected $name;
 
     /**
      * The user we last attempted to retrieve.
@@ -65,15 +64,17 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Create a new authentication guard.
      *
+     * @param  string  $name
      * @param \Illuminate\Contracts\Auth\UserProvider $provider
      * @param \Illuminate\Http\Request                $request
      *
      * @return void
      */
-    public function __construct(UserProvider $provider, Request $request)
+    public function __construct($name, UserProvider $provider, Request $request)
     {
-        $this->request = $request;
+        $this->name = $name;
         $this->provider = $provider;
+        $this->request = $request;
     }
 
     /**
@@ -134,6 +135,10 @@ class BasicGuard implements Guard, SupportsBasicAuth
      */
     public function basic($field = 'email', $extraConditions = [])
     {
+        if (! is_null($this->user)) {
+            return $this->user;
+        }
+
         // If a username is set on the HTTP basic request, we will return out without
         // interrupting the request lifecycle. Otherwise, we'll need to generate a
         // request indicating that the given credentials were invalid for login.
@@ -462,5 +467,15 @@ class BasicGuard implements Guard, SupportsBasicAuth
     public function getLastAttempted()
     {
         return $this->lastAttempted;
+    }
+
+    /**
+     * Get a unique identifier for the auth session value.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return 'login_'.$this->name.'_'.sha1(static::class);
     }
 }
