@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of Http Basic Auth Guard.
  *
@@ -62,6 +63,10 @@ abstract class AbstractTestCase extends AbstractPackageTestCase
         $app->config->set('auth.users', [
             'driver' => 'eloquent',
             'model'  => \App\User::class,
+        ]);
+        $app->config->set('auth.defaults', [
+            'guard' => 'api',
+            'passwords' => 'users',
         ]);
     }
 }
