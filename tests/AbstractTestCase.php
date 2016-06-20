@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 use Arubacao\BasicAuth\BasicGuardServiceProvider;
 use GrahamCampbell\TestBench\AbstractPackageTestCase;
 
@@ -61,7 +60,7 @@ abstract class AbstractTestCase extends AbstractPackageTestCase
             'users' => [
                 'driver' => 'eloquent',
                 'model'  => User::class,
-            ]
+            ],
         ]);
         $app->config->set('auth.defaults', [
             'guard' => 'api',

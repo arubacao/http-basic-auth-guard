@@ -8,14 +8,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 use Illuminate\Auth\Events\Attempting;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Auth;
 
 class AuthenticationTest extends AbstractTestCase
 {
-
     /** @test */
     public function user_gets_unauthorized_without_credentials_with_auth_middleware()
     {
@@ -58,7 +56,7 @@ class AuthenticationTest extends AbstractTestCase
             'PHP_AUTH_PW' => '123456',
         ])
             ->seeStatusCode(200)
-            ->assertEquals($user->toArray(), Auth::user()->toArray());;
+            ->assertEquals($user->toArray(), Auth::user()->toArray());
     }
 
     /** @test */
@@ -76,7 +74,7 @@ class AuthenticationTest extends AbstractTestCase
                 'PHP_AUTH_PW' => '123456',
             ])
             ->seeStatusCode(200)
-            ->assertEquals($user->toArray(), Auth::user()->toArray());;
+            ->assertEquals($user->toArray(), Auth::user()->toArray());
     }
 
     /** @test */
@@ -94,7 +92,7 @@ class AuthenticationTest extends AbstractTestCase
                 'PHP_AUTH_PW' => '123456',
             ])
             ->seeStatusCode(200)
-            ->assertEquals($user->toArray(), Auth::user()->toArray());;
+            ->assertEquals($user->toArray(), Auth::user()->toArray());
     }
 
     /** @test */
