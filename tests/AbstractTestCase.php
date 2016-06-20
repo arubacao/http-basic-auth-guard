@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Arubacao\Tests\BasicAuth;
 
 use Arubacao\BasicAuth\BasicGuardServiceProvider;
 use GrahamCampbell\TestBench\AbstractPackageTestCase;
@@ -34,9 +33,6 @@ abstract class AbstractTestCase extends AbstractPackageTestCase
     {
         parent::setUp();
 
-//        $this->artisan('migrate', [
-//            '--realpath' => realpath(__DIR__ . '/../vendor/laravel/laravel/database/migrations'),
-//        ]);
         $this->artisan('migrate', [
             '--realpath' => realpath(__DIR__.'/database/migrations'),
         ]);
@@ -54,15 +50,18 @@ abstract class AbstractTestCase extends AbstractPackageTestCase
     protected function getEnvironmentSetUp($app)
     {
         parent::getEnvironmentSetUp($app);
+
         $app->config->set('auth.guards', [
             'api' => [
                 'driver' => 'basic',
                 'provider' => 'users',
             ],
         ]);
-        $app->config->set('auth.users', [
-            'driver' => 'eloquent',
-            'model'  => \App\User::class,
+        $app->config->set('auth.providers', [
+            'users' => [
+                'driver' => 'eloquent',
+                'model'  => User::class,
+            ]
         ]);
         $app->config->set('auth.defaults', [
             'guard' => 'api',

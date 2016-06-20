@@ -8,9 +8,6 @@
  * file that was distributed with this source code.
  */
 
-$factory->define(User::class, function (Faker\Generator $faker) {
-    return [
-        'email' => $faker->safeEmail,
-        'password' => bcrypt($faker->password),
-    ];
-});
+use Illuminate\Foundation\Auth\User as Authenticatable;
+class User extends Authenticatable {
+}
