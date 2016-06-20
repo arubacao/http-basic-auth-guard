@@ -1,50 +1,56 @@
 # HTTP Basic Auth Guard
 [![Latest Version on Packagist][ico-version]][link-packagist] [![Software License][ico-license]](LICENSE.md) [![Total Downloads][ico-downloads]][link-downloads]
 
-> HTTP Basic Auth Guard is a Laravel & Lumen Package that lets you use `basic` as your driver for authentication guard in your application.
+> HTTP Basic Auth Guard is a Lumen Package that lets you use `basic` as your driver for the authentication guard in your application.
 
-> The Guard provides the missing stateless HTTP Basic Authentication possibilities - espacially for Lumen.
+> The Guard brings back the missing stateless HTTP Basic Authentication possibilities for **Lumen 5.2**.
+
+## Explanation
+As of Lumen 5.2 the package [illuminate/session](https://github.com/illuminate/session) is not included anymore.  
+Unfortunately, the [`session` driver](https://github.com/laravel/laravel/blob/v5.2.31/config/auth.php#L40) which is responsible
+for calling `Auth::onceBasic()`, `Auth::basic()`, or [alike](https://github.com/illuminate/auth/blob/v5.2.37/Middleware/AuthenticateWithBasicAuth.php#L38)
+obviously requires/relies on `illuminate/session`.  
+**Therefore HTTP Basic Authentication does not work out-of-the-box anymore.**  
+To be honest, I have no idea why Taylor Otwell removed this functionality from Lumen 5.2.  
+My best guess is, that he doesn't even know since my issue got [closed instantly](https://github.com/laravel/lumen-framework/issues/388) on github :smiley:   
+Luckily, this package brings the usual functionality back! 
 
 ## Requirements
-- Laravel or Lumen Installation.
+- Lumen **`5.2`** Installation.
+- **Note:** For Laravel 5.* or Lumen 5.1 HTTP Basic Auth still works out-of-the-box with the `session` driver: [Link](https://laravel.com/docs/5.2/authentication#stateless-http-basic-authentication).
 
-## Install
-Via Composer
+## Installation
+
+### Pull in package
 
 ```bash
 $ composer require arubacao/http-basic-auth-guard
 ```
 
 ### Read & Follow Documentation
-Lumen 5.2: [Authentication](https://lumen.laravel.com/docs/5.2/authentication)
 
-Laravel 5.2: [Authentication](https://laravel.com/docs/5.2/authentication)
+[Authentication](https://lumen.laravel.com/docs/5.2/authentication)
 
-**Note:** For Laravel you can use HTTP Basic Auth out-of-the-box with the `session` driver: [Link](https://laravel.com/docs/5.2/authentication#stateless-http-basic-authentication).
-
- **But the `session` driver does NOT work for Lumen 5.2, so there is no HTTP Basic Auth out-of-the-box for Lumen 5.2**
+*Important*:
+> Before using Lumen's authentication features, you should uncomment the call to register the `AuthServiceProvider` service provider in your `bootstrap/app.php` file.  
+> If you would like to use `Auth::user()` to access the currently authenticated user, you should uncomment the `$app->withFacades()` method in your `bootstrap/app.php` file.
 
 ### Add the Service Provider
-#### Laravel
-Open `config/app.php` and, to your `providers` array at the bottom, add:
 
-```php
-Arubacao\BasicAuth\BasicGuardServiceProvider::class
-```
-
-#### Lumen
 Open `bootstrap/app.php` and register the service provider:
 
 ```php
 $app->register(Arubacao\BasicAuth\BasicGuardServiceProvider::class);
 ```
 
-## Usage
-Open your `config/auth.php` config file and in place of driver under any of your guards, just add the `basic` as your driver and you're all set. Make sure you also set `provider` for the guard to communicate with your database.
-
-**Note:** In Lumen you first have to copy the config file from the directory `vendor/laravel/lumen-framework/config/auth.php`, create a `config` folder in your root folder and finally paste the copied file there.
-
 ### Setup Guard Driver
+
+> **Note:** In Lumen you first have to copy the config file from the directory `vendor/laravel/lumen-framework/config/auth.php`, create a `config` folder in your root folder and finally paste the copied file there.
+
+Open your `config/auth.php` config file.  
+In `guards` add a new key of your choice (`api` in this example).  
+Add `basic` as the driver.  
+Make sure you also set `provider` for the guard to communicate with your database.
 
 ```php
 // config/auth.php

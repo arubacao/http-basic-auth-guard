@@ -1,6 +1,11 @@
 # Changelog
 All Notable changes to this project will be documented in this file.
 
+## 1.0.3 - 20 June 2016
+### Changed
+- Required 5.2 components in composer.json
+- Refactored test suite 
+
 ## 1.0.2 - 05 June 2016
 ### Added
 - Test suite
