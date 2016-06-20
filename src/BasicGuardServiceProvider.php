@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of Http Basic Auth Guard.
  *
@@ -32,11 +33,18 @@ class BasicGuardServiceProvider extends ServiceProvider
     {
         $this->app['auth']->extend('basic', function ($app, $name, array $config) {
             $guard = new BasicGuard(
+                $name,
                 $app['auth']->createUserProvider($config['provider']),
                 $app['request']
             );
 
-            $app->refresh('request', $guard, 'setRequest');
+            if (method_exists($guard, 'setDispatcher')) {
+                $guard->setDispatcher($this->app['events']);
+            }
+
+            if (method_exists($guard, 'setRequest')) {
+                $guard->setRequest($this->app->refresh('request', $guard, 'setRequest'));
+            }
 
             // Return an instance of Illuminate\Contracts\Auth\Guard...
             return $guard;

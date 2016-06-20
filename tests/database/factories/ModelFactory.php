@@ -7,10 +7,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-$factory->define(App\User::class, function (Faker\Generator $faker) {
+$factory->define(User::class, function (Faker\Generator $faker) {
     return [
-        'name' => $faker->name,
         'email' => $faker->safeEmail,
-        'password' => bcrypt(str_random(10)),
+        'password' => bcrypt($faker->password),
     ];
 });
