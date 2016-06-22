@@ -1,5 +1,7 @@
 # HTTP Basic Auth Guard
-[![Latest Version on Packagist][ico-version]][link-packagist] [![Software License][ico-license]](LICENSE.md) [![Total Downloads][ico-downloads]][link-downloads]
+[![Latest Version on Packagist][ico-version]][link-packagist]
+[![Software License][ico-license]](LICENSE.md)
+[![Total Downloads][ico-downloads]][link-downloads]
 
 > HTTP Basic Auth Guard is a Lumen Package that lets you use `basic` as your driver for the authentication guard in your application.
 
@@ -122,3 +124,6 @@ The MIT License (MIT).
 [link-downloads]: https://packagist.org/packages/arubacao/http-basic-auth-guard
 [link-author]: https://github.com/arubacao
 [link-contributors]: ../../contributors
+
+
+[![Analytics](https://ga-beacon.appspot.com/UA-77737156-2/readme?pixel)](https://github.com/arubacao/http-basic-auth-guard)
