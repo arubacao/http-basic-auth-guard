@@ -18,8 +18,13 @@ My best guess is, that he doesn't even know since my issue got [closed instantly
 Luckily, this package brings the usual functionality back! 
 
 ## Requirements
-- Lumen **`5.2`** Installation.
+- Lumen **`5.2`** or **above** Installation.
 - **Note:** For Laravel 5.* or Lumen 5.1 HTTP Basic Auth still works out-of-the-box with the `session` driver: [Link](https://laravel.com/docs/5.2/authentication#stateless-http-basic-authentication).
+
+## Tested with
+- Lumen **`5.2`**
+- Lumen **`5.3`**
+- Lumen **`5.4`**
 
 ## Installation
 
