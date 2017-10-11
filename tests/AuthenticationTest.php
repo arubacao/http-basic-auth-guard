@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of Http Basic Auth Guard.
  *
@@ -8,9 +7,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-use Illuminate\Auth\Events\Attempting;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Auth\Events\Attempting;
 
 class AuthenticationTest extends AbstractTestCase
 {
@@ -46,7 +45,7 @@ class AuthenticationTest extends AbstractTestCase
     public function user_gets_ok_with_correct_credentials_with_auth_middleware()
     {
         $user = factory(User::class)->create([
-            'password' => bcrypt('123456'),
+            'password' => password_hash('123456', PASSWORD_DEFAULT),
         ]);
         $this->app->router->get('api/whatever', ['middleware' => 'auth:api', function () {
             return 'YoYo!';
@@ -63,7 +62,7 @@ class AuthenticationTest extends AbstractTestCase
     public function attempting_event_gets_fired_with_correct_credentials_with_auth_middleware()
     {
         $user = factory(User::class)->create([
-            'password' => bcrypt('123456'),
+            'password' => password_hash('123456', PASSWORD_DEFAULT),
         ]);
         $this->app->router->get('api/whatever', ['middleware' => 'auth:api', function () {
             return 'YoYo!';
@@ -81,7 +80,7 @@ class AuthenticationTest extends AbstractTestCase
     public function login_event_not_fired_with_correct_credentials_with_auth_middleware()
     {
         $user = factory(User::class)->create([
-            'password' => bcrypt('123456'),
+            'password' => password_hash('123456', PASSWORD_DEFAULT),
         ]);
         $this->app->router->get('api/whatever', ['middleware' => 'auth:api', function () {
             return 'YoYo!';
@@ -99,7 +98,7 @@ class AuthenticationTest extends AbstractTestCase
     public function basic_method_fires_attempting_event_with_valid_credentials()
     {
         $user = factory(User::class)->create([
-            'password' => bcrypt('123456'),
+            'password' => password_hash('123456', PASSWORD_DEFAULT),
         ]);
 
         $this->app->router->get('api/whatever', function () {
@@ -133,7 +132,7 @@ class AuthenticationTest extends AbstractTestCase
     public function basic_method_fires_login_event_with_valid_credentials()
     {
         $user = factory(User::class)->create([
-            'password' => bcrypt('123456'),
+            'password' => password_hash('123456', PASSWORD_DEFAULT),
         ]);
 
         $this->app->router->get('api/whatever', function () {
@@ -167,7 +166,7 @@ class AuthenticationTest extends AbstractTestCase
     public function onceBasic_method_does_not_fire_login_event_with_valid_credentials()
     {
         $user = factory(User::class)->create([
-            'password' => bcrypt('123456'),
+            'password' => password_hash('123456', PASSWORD_DEFAULT),
         ]);
 
         $this->app->router->get('api/whatever', function () {
