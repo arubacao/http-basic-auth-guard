@@ -32,9 +32,10 @@ abstract class AbstractTestCase extends AbstractPackageTestCase
     {
         parent::setUp();
 
-        $this->artisan('migrate', [
-            '--realpath' => realpath(__DIR__.'/database/migrations'),
-        ]);
+        $this->app['config']->set('database.default', 'sqlite');
+        $this->app['config']->set('database.connections.sqlite.database', ':memory:');
+
+        $this->migrate();
 
         $this->withFactories(realpath(__DIR__.'/database/factories'));
     }
