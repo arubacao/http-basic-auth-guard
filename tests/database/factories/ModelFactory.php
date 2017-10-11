@@ -10,6 +10,6 @@
 $factory->define(User::class, function (Faker\Generator $faker) {
     return [
         'email' => $faker->safeEmail,
-        'password' => bcrypt($faker->password),
+        'password' => password_hash($faker->password, PASSWORD_DEFAULT),
     ];
 });
