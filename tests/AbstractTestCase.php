@@ -33,7 +33,7 @@ abstract class AbstractTestCase extends AbstractPackageTestCase
         parent::setUp();
 
         $this->artisan('migrate', [
-            '--realpath' => realpath(__DIR__.'/database/migrations'),
+            '--path' => realpath(__DIR__.'/database/migrations'),
         ]);
 
         $this->withFactories(realpath(__DIR__.'/database/factories'));
