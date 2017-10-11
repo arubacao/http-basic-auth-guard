@@ -9,10 +9,13 @@
  * file that was distributed with this source code.
  */
 use Arubacao\BasicAuth\BasicGuardServiceProvider;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use GrahamCampbell\TestBench\AbstractPackageTestCase;
 
 abstract class AbstractTestCase extends AbstractPackageTestCase
 {
+    use RefreshDatabase;
+
     /**
      * Get the service provider class.
      *
@@ -31,10 +34,6 @@ abstract class AbstractTestCase extends AbstractPackageTestCase
     public function setUp()
     {
         parent::setUp();
-
-        $this->artisan('migrate', [
-            '--realpath' => realpath(__DIR__.'/database/migrations'),
-        ]);
 
         $this->withFactories(realpath(__DIR__.'/database/factories'));
     }
