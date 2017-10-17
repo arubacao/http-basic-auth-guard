@@ -10,6 +10,7 @@
  */
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Attempting;
 
 class AuthenticationTest extends AbstractTestCase
