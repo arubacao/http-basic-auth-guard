@@ -1,19 +1,36 @@
 language: php
 
+sudo: false
+
+notifications:
+  email:
+    on_success: never
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+branches:
+  only:
+    - master
+
 php:
   - 5.6
   - 7.0
-  - hhvm
 
-sudo: false
+env:
+  matrix:
+    - LUMEN_FOLDER=lumen-5.2
+
+before_install:
+  - composer self-update --stable --no-interaction
+  - cd tests/$LUMEN_FOLDER
 
 install:
-  - travis_retry composer install --no-interaction --prefer-source
+  - travis_retry composer update --no-suggest --no-interaction
+
+before_script:
+  - cd tests/$LUMEN_FOLDER
 
 script:
-  - if [ "$TRAVIS_PHP_VERSION" != "5.5.9" ] && [ "$TRAVIS_PHP_VERSION" != "5.5" ] && [ "$TRAVIS_PHP_VERSION" != "5.6" ]; then vendor/bin/phpunit; fi
-  - if [ "$TRAVIS_PHP_VERSION" == "5.5.9" ] || [ "$TRAVIS_PHP_VERSION" == "5.5" ] || [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then vendor/bin/phpunit --coverage-clover build/logs/clover.xml; fi
-
-after_script:
-  - if [ "$TRAVIS_PHP_VERSION" == "5.5.9" ] || [ "$TRAVIS_PHP_VERSION" == "5.5" ] || [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then wget https://scrutinizer-ci.com/ocular.phar; fi
-  - if [ "$TRAVIS_PHP_VERSION" == "5.5.9" ] || [ "$TRAVIS_PHP_VERSION" == "5.5" ] || [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml; fi
+  - vendor/bin/phpunit
