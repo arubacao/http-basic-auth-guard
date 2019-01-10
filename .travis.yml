@@ -24,7 +24,6 @@ env:
 
 before_install:
   - cd tests/$LUMEN_FOLDER
-  - composer self-update --stable --no-interaction
 
 install:
   - travis_retry composer update --no-suggest --no-interaction
