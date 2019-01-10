@@ -23,14 +23,11 @@ env:
     - LUMEN_FOLDER=lumen-5.2
 
 before_install:
-  - composer self-update --stable --no-interaction
   - cd tests/$LUMEN_FOLDER
+  - composer self-update --stable --no-interaction
 
 install:
   - travis_retry composer update --no-suggest --no-interaction
-
-before_script:
-  - cd tests/$LUMEN_FOLDER
 
 script:
   - vendor/bin/phpunit
