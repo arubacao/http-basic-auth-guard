@@ -23,6 +23,7 @@ env:
     - LUMEN_FOLDER=lumen-5.2
     - LUMEN_FOLDER=lumen-5.3
     - LUMEN_FOLDER=lumen-5.4
+    - LUMEN_FOLDER=lumen-5.5
 
 before_install:
   - cd tests/$LUMEN_FOLDER
