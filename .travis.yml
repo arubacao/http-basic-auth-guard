@@ -21,6 +21,7 @@ php:
 env:
   matrix:
     - LUMEN_FOLDER=lumen-5.2
+    - LUMEN_FOLDER=lumen-5.3
 
 before_install:
   - cd tests/$LUMEN_FOLDER

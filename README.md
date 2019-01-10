@@ -5,14 +5,14 @@
 
 > HTTP Basic Auth Guard is a Lumen Package that lets you use `basic` as your driver for the authentication guard in your application.
 
-> The Guard brings back the missing stateless HTTP Basic Authentication possibilities for **Lumen 5.2**.
+> The Guard brings back the missing stateless HTTP Basic Authentication possibilities for **Lumen >=5.2**.
 
 ## Explanation
 As of Lumen 5.2 the package [illuminate/session](https://github.com/illuminate/session) is not included anymore.  
 Unfortunately, the [`session` driver](https://github.com/laravel/laravel/blob/v5.2.31/config/auth.php#L40) which is responsible
 for calling `Auth::onceBasic()`, `Auth::basic()`, or [alike](https://github.com/illuminate/auth/blob/v5.2.37/Middleware/AuthenticateWithBasicAuth.php#L38)
 obviously requires/relies on `illuminate/session`.  
-**Therefore HTTP Basic Authentication does not work out-of-the-box anymore.**  
+**Therefore HTTP Basic Authentication does not work out-of-the-box anymore for Lumen `>=5.2`.**  
 To be honest, I have no idea why Taylor Otwell removed this functionality from Lumen 5.2.  
 My best guess is, that he doesn't even know since my issue got [closed instantly](https://github.com/laravel/lumen-framework/issues/388) on github :smiley:   
 Luckily, this package brings the usual functionality back! 
@@ -22,37 +22,72 @@ Luckily, this package brings the usual functionality back!
 - **Note:** For Laravel 5.* or Lumen 5.1 HTTP Basic Auth still works out-of-the-box with the `session` driver: [Link](https://laravel.com/docs/5.2/authentication#stateless-http-basic-authentication).
 
 ## Tested with
-- Lumen **`5.2`**
-- Lumen **`5.3`**
-- Lumen **`5.4`**
+- Lumen **`5.2`**, **`5.3`**, **`5.4`**, **`5.5`**, **`5.6`**, **`5.7`**
+- PHP **`5.6`**
 
 ## Installation
 
-### Pull in package
+### 1. Pull in package
 
 ```bash
 $ composer require arubacao/http-basic-auth-guard
 ```
 
-### Read & Follow Documentation
+### 2. Read & Follow Official Lumen Documentation for Authentication
 
-[Authentication](https://lumen.laravel.com/docs/5.2/authentication)
+[https://lumen.laravel.com/docs/5.2/authentication](https://lumen.laravel.com/docs/5.2/authentication)
 
 *Important*:
 > Before using Lumen's authentication features, you should uncomment the call to register the `AuthServiceProvider` service provider in your `bootstrap/app.php` file.  
+
+```php
+// bootstrap/app.php
+
+// Uncomment the following line 
+ $app->register(App\Providers\AuthServiceProvider::class);
+```
+
+> Of course, any routes you wish to authenticate should be assigned the auth middleware, so you should uncomment the call to $app->routeMiddleware() in your bootstrap/app.php file:
+
+```php
+// bootstrap/app.php
+
+// Uncomment the following lines
+ $app->routeMiddleware([
+    'auth' => App\Http\Middleware\Authenticate::class,
+ ]);
+```
+
 > If you would like to use `Auth::user()` to access the currently authenticated user, you should uncomment the `$app->withFacades()` method in your `bootstrap/app.php` file.
 
-### Add the Service Provider
+```php
+// bootstrap/app.php
+
+// Uncomment the following lines
+ $app->withFacades();
+ $app->withEloquent();
+
+```
+
+### 3. Add the Service Provider
 
 Open `bootstrap/app.php` and register the service provider:
 
 ```php
+// bootstrap/app.php
+
+// Add the following line
 $app->register(Arubacao\BasicAuth\BasicGuardServiceProvider::class);
 ```
 
-### Setup Guard Driver
+### 4. Setup Guard Driver
 
 > **Note:** In Lumen you first have to copy the config file from the directory `vendor/laravel/lumen-framework/config/auth.php`, create a `config` folder in your root folder and finally paste the copied file there.
+
+```bash
+$ mkdir config
+$ cp vendor/laravel/lumen-framework/config/auth.php config/
+```
 
 Open your `config/auth.php` config file.  
 In `guards` add a new key of your choice (`api` in this example).  
@@ -78,7 +113,7 @@ Make sure you also set `provider` for the guard to communicate with your databas
 ],
 ```
 
-### Middleware Usage
+## Usage
 Middleware protecting the route:
 
 ```php
