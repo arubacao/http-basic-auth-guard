@@ -1,6 +1,6 @@
 {
     "name": "arubacao/http-basic-auth-guard",
-    "description": "HTTP Basic Auth Guard for Lumen 5.2",
+    "description": "HTTP Basic Auth Guard for Lumen >=5.2",
     "keywords": [
         "lumen",
         "lumen 5.2",
@@ -15,36 +15,21 @@
     "authors": [
         {
             "name": "Christopher Lass",
-            "email": "arubacao@gmail.com",
-            "role": "Developer"
+            "homepage": "https://c-lass.com/"
         }
     ],
-    "support": {
-        "issues": "https://github.com/arubacao/http-basic-auth-guard/issues",
-        "source": "https://github.com/arubacao/http-basic-auth-guard"
-    },
     "require": {
         "php": ">=5.6.0",
         "illuminate/database": "^5.2",
         "illuminate/support": "^5.2"
-    },
-    "require-dev": {
-        "phpunit/phpunit" : "^4.1",
-        "mockery/mockery": "dev-master",
-        "graham-campbell/testbench": "^3.0"
     },
     "autoload": {
         "psr-4": {
             "Arubacao\\BasicAuth\\": "src"
         }
     },
-    "autoload-dev": {
-        "classmap": [
-            "tests/models/User.php",
-            "tests/AbstractTestCase.php"
-        ]
-    },
-    "scripts": {
-        "test": "phpunit"
+    "support": {
+        "issues": "https://github.com/arubacao/http-basic-auth-guard/issues",
+        "source": "https://github.com/arubacao/http-basic-auth-guard"
     }
 }
