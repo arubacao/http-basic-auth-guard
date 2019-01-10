@@ -8,10 +8,9 @@
 > The Guard brings back the missing stateless HTTP Basic Authentication possibilities for **Lumen >=5.2**.
 
 ## Explanation
-As of Lumen 5.2 the package [illuminate/session](https://github.com/illuminate/session) is not included anymore.  
-Unfortunately, the [`session` driver](https://github.com/laravel/laravel/blob/v5.2.31/config/auth.php#L40) which is responsible
-for calling `Auth::onceBasic()`, `Auth::basic()`, or [alike](https://github.com/illuminate/auth/blob/v5.2.37/Middleware/AuthenticateWithBasicAuth.php#L38)
-obviously requires/relies on `illuminate/session`.  
+As of Lumen 5.2 the **session storage** is not included anymore.  
+Unfortunately, for calling `Auth::onceBasic()`, `Auth::basic()`, or [alike](https://github.com/illuminate/auth/blob/v5.2.37/Middleware/AuthenticateWithBasicAuth.php#L38) 
+you'll need the [`session` driver](https://github.com/laravel/laravel/blob/v5.2.31/config/auth.php#L40) which requires the **session storage**.  
 **Therefore HTTP Basic Authentication does not work out-of-the-box anymore for Lumen `>=5.2`.**  
 To be honest, I have no idea why Taylor Otwell removed this functionality from Lumen 5.2.  
 My best guess is, that he doesn't even know since my issue got [closed instantly](https://github.com/laravel/lumen-framework/issues/388) on github :smiley:   
