@@ -27,6 +27,3 @@ $ phpunit
 ```
 
 **Happy coding**!
-
-
-[![Analytics](https://ga-beacon.appspot.com/UA-77737156-2/contributing?pixel)](https://github.com/arubacao/http-basic-auth-guard)
