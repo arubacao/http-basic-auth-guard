@@ -10,11 +10,11 @@
  */
 
 use App\User;
-use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Attempting;
 use Laravel\Lumen\Testing\DatabaseMigrations;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class AuthenticationTest extends TestCase
 {
@@ -151,12 +151,16 @@ class AuthenticationTest extends TestCase
         $this->app->router->get('api/whatever', function () {
             Auth::basic();
         });
-        $this->expectsEvents(Attempting::class)
-            ->json('GET', 'api/whatever', [], [
+
+        $this->expectException(UnauthorizedHttpException::class);
+        $this->expectsEvents(Attempting::class);
+
+        $this->json('GET', 'api/whatever', [], [
                 'PHP_AUTH_USER' => $user->email,
                 'PHP_AUTH_PW' => '',
             ])
             ->assertNull(Auth::user());
+
     }
 
     /** @test */
@@ -169,7 +173,8 @@ class AuthenticationTest extends TestCase
         $this->app->router->get('api/whatever', function () {
             Auth::basic();
         });
-        $this->expectsEvents(Login::class)
+        $this->expectsEvents(\Illuminate\Auth\Events\Authenticated::class);
+            $this
             ->json('GET', 'api/whatever', [], [
                 'PHP_AUTH_USER' => $user->email,
                 'PHP_AUTH_PW' => '123456',
@@ -185,6 +190,9 @@ class AuthenticationTest extends TestCase
         $this->app->router->get('api/whatever', function () {
             Auth::basic();
         });
+
+        $this->expectException(UnauthorizedHttpException::class);
+
         $this
 //            ->doesntExpectEvents(Login::class)
             ->json('GET', 'api/whatever', [], [
