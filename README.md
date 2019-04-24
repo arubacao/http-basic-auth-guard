@@ -25,7 +25,7 @@ Luckily, this package brings the usual functionality back!
 - PHP **`5.6`**, **`7.0`**, **`7.1`**, **`7.2`**, **`7.3`**  
 
 Current master is for Lumen >= `5.7`.
-Use version [`^1.0`](https://github.com/arubacao/http-basic-auth-guard/tree/1.0.4) for Lumen <= `5.6`. 
+For Lumen <= `5.6` Use version [`^1.0`](https://github.com/arubacao/http-basic-auth-guard/tree/1.0.4). 
 
 ## Installation
 
@@ -37,7 +37,7 @@ $ composer require arubacao/http-basic-auth-guard
 
 ### 2. Read & Follow Official Lumen Documentation for Authentication
 
-[https://lumen.laravel.com/docs/5.2/authentication](https://lumen.laravel.com/docs/5.2/authentication)
+[https://lumen.laravel.com/docs/5.7/authentication](https://lumen.laravel.com/docs/5.7/authentication)
 
 *Important*:
 > Before using Lumen's authentication features, you should uncomment the call to register the `AuthServiceProvider` service provider in your `bootstrap/app.php` file.  
