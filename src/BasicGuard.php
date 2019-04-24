@@ -11,23 +11,24 @@
 namespace Arubacao\BasicAuth;
 
 use Illuminate\Auth\Events;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Auth\GuardHelpers;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Support\Traits\Macroable;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Events\Dispatcher;
+use Symfony\Component\HttpFoundation\Request;
 use Illuminate\Contracts\Auth\SupportsBasicAuth;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 
 class BasicGuard implements Guard, SupportsBasicAuth
 {
-    use GuardHelpers;
+    use GuardHelpers, Macroable;
 
     /**
      * The name of the Guard.
      *
-     * Corresponds to driver name in authentication configuration.
+     * Corresponds to guard name in authentication configuration.
      *
      * @var string
      */
@@ -43,7 +44,7 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * The request instance.
      *
-     * @var \Illuminate\Http\Request
+     * @var \Symfony\Component\HttpFoundation\Request
      */
     protected $request;
 
@@ -55,26 +56,25 @@ class BasicGuard implements Guard, SupportsBasicAuth
     protected $events;
 
     /**
-     * Indicates if a token user retrieval has been attempted.
+     * Indicates if the logout method has been called.
      *
      * @var bool
      */
-    protected $tokenRetrievalAttempted = false;
+    protected $loggedOut = false;
 
     /**
      * Create a new authentication guard.
      *
      * @param  string  $name
-     * @param \Illuminate\Contracts\Auth\UserProvider $provider
-     * @param \Illuminate\Http\Request                $request
-     *
+     * @param  \Illuminate\Contracts\Auth\UserProvider  $provider
+     * @param  \Symfony\Component\HttpFoundation\Request|null  $request
      * @return void
      */
-    public function __construct($name, UserProvider $provider, Request $request)
+    public function __construct($name, UserProvider $provider, Request $request = null)
     {
         $this->name = $name;
-        $this->provider = $provider;
         $this->request = $request;
+        $this->provider = $provider;
     }
 
     /**
@@ -84,8 +84,13 @@ class BasicGuard implements Guard, SupportsBasicAuth
      */
     public function user()
     {
+        if ($this->loggedOut) {
+            return;
+        }
+
         // If we've already retrieved the user for the current request we can just
-        // return it back immediately.
+        // return it back immediately. We do not want to fetch the user data on
+        // every call to this method because that would be tremendously slow.
         if (! is_null($this->user)) {
             return $this->user;
         }
@@ -96,14 +101,31 @@ class BasicGuard implements Guard, SupportsBasicAuth
     }
 
     /**
+     * Get the ID for the currently authenticated user.
+     *
+     * @return int|null
+     */
+    public function id()
+    {
+        if ($this->loggedOut) {
+            return;
+        }
+
+        return $this->user()
+            ? $this->user()->getAuthIdentifier()
+            : null;
+    }
+
+    /**
      * Log a user into the application without sessions or cookies.
      *
-     * @param array $credentials
-     *
+     * @param  array  $credentials
      * @return bool
      */
     public function once(array $credentials = [])
     {
+        $this->fireAttemptEvent($credentials);
+
         if ($this->validate($credentials)) {
             $this->setUser($this->lastAttempted);
 
@@ -114,29 +136,46 @@ class BasicGuard implements Guard, SupportsBasicAuth
     }
 
     /**
+     * Log the given user ID into the application without sessions or cookies.
+     *
+     * @param  mixed  $id
+     * @return \Illuminate\Contracts\Auth\Authenticatable|false
+     */
+    public function onceUsingId($id)
+    {
+        if (! is_null($user = $this->provider->retrieveById($id))) {
+            $this->setUser($user);
+
+            return $user;
+        }
+
+        return false;
+    }
+
+    /**
      * Validate a user's credentials.
      *
-     * @param array $credentials
-     *
+     * @param  array  $credentials
      * @return bool
      */
     public function validate(array $credentials = [])
     {
-        return $this->attempt($credentials, false, false);
+        $this->lastAttempted = $user = $this->provider->retrieveByCredentials($credentials);
+
+        return $this->hasValidCredentials($user, $credentials);
     }
 
     /**
      * Attempt to authenticate using HTTP Basic Auth.
      *
-     * @param string $field
-     * @param array  $extraConditions
-     *
+     * @param  string  $field
+     * @param  array  $extraConditions
      * @return \Symfony\Component\HttpFoundation\Response|null
      */
     public function basic($field = 'email', $extraConditions = [])
     {
-        if (! is_null($this->user)) {
-            return $this->user;
+        if ($this->check()) {
+            return;
         }
 
         // If a username is set on the HTTP basic request, we will return out without
@@ -146,33 +185,31 @@ class BasicGuard implements Guard, SupportsBasicAuth
             return;
         }
 
-        return $this->getBasicResponse();
+        return $this->failedBasicResponse();
     }
 
     /**
      * Perform a stateless HTTP Basic login attempt.
      *
-     * @param string $field
-     * @param array  $extraConditions
-     *
+     * @param  string  $field
+     * @param  array  $extraConditions
      * @return \Symfony\Component\HttpFoundation\Response|null
      */
     public function onceBasic($field = 'email', $extraConditions = [])
     {
-        $credentials = $this->getBasicCredentials($this->getRequest(), $field);
+        $credentials = $this->basicCredentials($this->getRequest(), $field);
 
         if (! $this->once(array_merge($credentials, $extraConditions))) {
-            return $this->getBasicResponse();
+            return $this->failedBasicResponse();
         }
     }
 
     /**
      * Attempt to authenticate using basic authentication.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param string                   $field
-     * @param array                    $extraConditions
-     *
+     * @param  \Symfony\Component\HttpFoundation\Request  $request
+     * @param  string  $field
+     * @param  array  $extraConditions
      * @return bool
      */
     protected function attemptBasic(Request $request, $field, $extraConditions = [])
@@ -181,20 +218,19 @@ class BasicGuard implements Guard, SupportsBasicAuth
             return false;
         }
 
-        $credentials = $this->getBasicCredentials($request, $field);
-
-        return $this->attempt(array_merge($credentials, $extraConditions));
+        return $this->attempt(array_merge(
+            $this->basicCredentials($request, $field), $extraConditions
+        ));
     }
 
     /**
      * Get the credential array for a HTTP Basic request.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param string                   $field
-     *
+     * @param  \Symfony\Component\HttpFoundation\Request  $request
+     * @param  string  $field
      * @return array
      */
-    protected function getBasicCredentials(Request $request, $field)
+    protected function basicCredentials(Request $request, $field)
     {
         return [$field => $request->getUser(), 'password' => $request->getPassword()];
     }
@@ -202,27 +238,25 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Get the response for basic authentication.
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return void
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
      */
-    protected function getBasicResponse()
+    protected function failedBasicResponse()
     {
-        $headers = ['WWW-Authenticate' => 'Basic'];
-
-        return new Response('Invalid credentials.', 401, $headers);
+        throw new UnauthorizedHttpException('Basic', 'Invalid credentials.');
     }
 
     /**
      * Attempt to authenticate a user using the given credentials.
      *
-     * @param array $credentials
-     * @param bool  $remember
-     * @param bool  $login
-     *
+     * @param  array  $credentials
+     * @param  bool   $remember
      * @return bool
      */
-    public function attempt(array $credentials = [], $remember = false, $login = true)
+    public function attempt(array $credentials = [], $remember = false)
     {
-        $this->fireAttemptEvent($credentials, $remember, $login);
+        $this->fireAttemptEvent($credentials, $remember);
 
         $this->lastAttempted = $user = $this->provider->retrieveByCredentials($credentials);
 
@@ -230,12 +264,15 @@ class BasicGuard implements Guard, SupportsBasicAuth
         // to validate the user against the given credentials, and if they are in
         // fact valid we'll log the users into the application and return true.
         if ($this->hasValidCredentials($user, $credentials)) {
-            if ($login) {
-                $this->login($user, $remember);
-            }
+            $this->login($user, $remember);
 
             return true;
         }
+
+        // If the authentication attempt fails we will fire an event so that the user
+        // may be notified of any suspicious attempts to access their account from
+        // an unrecognized user. A developer may listen to this event as needed.
+        $this->fireFailedEvent($user, $credentials);
 
         return false;
     }
@@ -243,9 +280,8 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Determine if the user matches the credentials.
      *
-     * @param mixed $user
-     * @param array $credentials
-     *
+     * @param  mixed  $user
+     * @param  array  $credentials
      * @return bool
      */
     protected function hasValidCredentials($user, $credentials)
@@ -254,108 +290,38 @@ class BasicGuard implements Guard, SupportsBasicAuth
     }
 
     /**
-     * Fire the attempt event with the arguments.
+     * Log the given user ID into the application.
      *
-     * @param array $credentials
-     * @param bool  $remember
-     * @param bool  $login
-     *
-     * @return void
+     * @param  mixed  $id
+     * @param  bool   $remember
+     * @return \Illuminate\Contracts\Auth\Authenticatable|false
      */
-    protected function fireAttemptEvent(array $credentials, $remember, $login)
+    public function loginUsingId($id, $remember = false)
     {
-        if (isset($this->events)) {
-            $this->events->fire(new Events\Attempting(
-                $credentials, $remember, $login
-            ));
-        }
-    }
+        if (! is_null($user = $this->provider->retrieveById($id))) {
+            $this->login($user, $remember);
 
-    /**
-     * Register an authentication attempt event listener.
-     *
-     * @param mixed $callback
-     *
-     * @return void
-     */
-    public function attempting($callback)
-    {
-        if (isset($this->events)) {
-            $this->events->listen(Events\Attempting::class, $callback);
+            return $user;
         }
+
+        return false;
     }
 
     /**
      * Log a user into the application.
      *
-     * @param \Illuminate\Contracts\Auth\Authenticatable $user
-     * @param bool                                       $remember
-     *
+     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
+     * @param  bool  $remember
      * @return void
      */
     public function login(AuthenticatableContract $user, $remember = false)
     {
-
         // If we have an event dispatcher instance set we will fire an event so that
         // any listeners will hook into the authentication events and run actions
         // based on the login and logout events fired from the guard instances.
         $this->fireLoginEvent($user, $remember);
 
         $this->setUser($user);
-    }
-
-    /**
-     * Fire the login event if the dispatcher is set.
-     *
-     * @param \Illuminate\Contracts\Auth\Authenticatable $user
-     * @param bool                                       $remember
-     *
-     * @return void
-     */
-    protected function fireLoginEvent($user, $remember = false)
-    {
-        if (isset($this->events)) {
-            $this->events->fire(new Events\Login($user, $remember));
-        }
-    }
-
-    /**
-     * Log the given user ID into the application.
-     *
-     * @param mixed $id
-     * @param bool  $remember
-     *
-     * @throws \Exception
-     *
-     * @return \Illuminate\Contracts\Auth\Authenticatable
-     */
-    public function loginUsingId($id, $remember = false)
-    {
-        if ($remember !== false) {
-            throw new \Exception('Lumen cannot remember login. No session support');
-        }
-
-        $this->login($user = $this->provider->retrieveById($id), $remember);
-
-        return $user;
-    }
-
-    /**
-     * Log the given user ID into the application without sessions or cookies.
-     *
-     * @param mixed $id
-     *
-     * @return bool
-     */
-    public function onceUsingId($id)
-    {
-        if (! is_null($user = $this->provider->retrieveById($id))) {
-            $this->setUser($user);
-
-            return true;
-        }
-
-        return false;
     }
 
     /**
@@ -367,18 +333,102 @@ class BasicGuard implements Guard, SupportsBasicAuth
     {
         $user = $this->user();
 
-        // If we have an event dispatcher instance, we can fire off the logout event
-        // so any further processing can be done. This allows the developer to be
-        // listening for anytime a user signs out of this application manually.
-
         if (isset($this->events)) {
-            $this->events->fire(new Events\Logout($user));
+            $this->events->dispatch(new Events\Logout($this->name, $user));
         }
 
         // Once we have fired the logout event we will clear the users out of memory
         // so they are no longer available as the user is no longer considered as
         // being signed into this application and should not be available here.
         $this->user = null;
+
+        $this->loggedOut = true;
+    }
+
+    /**
+     * Register an authentication attempt event listener.
+     *
+     * @param  mixed  $callback
+     * @return void
+     */
+    public function attempting($callback)
+    {
+        if (isset($this->events)) {
+            $this->events->listen(Events\Attempting::class, $callback);
+        }
+    }
+
+    /**
+     * Fire the attempt event with the arguments.
+     *
+     * @param  array  $credentials
+     * @param  bool  $remember
+     * @return void
+     */
+    protected function fireAttemptEvent(array $credentials, $remember = false)
+    {
+        if (isset($this->events)) {
+            $this->events->dispatch(new Events\Attempting(
+                $this->name, $credentials, $remember
+            ));
+        }
+    }
+
+    /**
+     * Fire the login event if the dispatcher is set.
+     *
+     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
+     * @param  bool  $remember
+     * @return void
+     */
+    protected function fireLoginEvent($user, $remember = false)
+    {
+        if (isset($this->events)) {
+            $this->events->dispatch(new Events\Login(
+                $this->name, $user, $remember
+            ));
+        }
+    }
+
+    /**
+     * Fire the authenticated event if the dispatcher is set.
+     *
+     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
+     * @return void
+     */
+    protected function fireAuthenticatedEvent($user)
+    {
+        if (isset($this->events)) {
+            $this->events->dispatch(new Events\Authenticated(
+                $this->name, $user
+            ));
+        }
+    }
+
+    /**
+     * Fire the failed authentication attempt event with the given arguments.
+     *
+     * @param  \Illuminate\Contracts\Auth\Authenticatable|null  $user
+     * @param  array  $credentials
+     * @return void
+     */
+    protected function fireFailedEvent($user, array $credentials)
+    {
+        if (isset($this->events)) {
+            $this->events->dispatch(new Events\Failed(
+                $this->name, $user, $credentials
+            ));
+        }
+    }
+
+    /**
+     * Get the last user we attempted to authenticate.
+     *
+     * @return \Illuminate\Contracts\Auth\Authenticatable
+     */
+    public function getLastAttempted()
+    {
+        return $this->lastAttempted;
     }
 
     /**
@@ -394,35 +444,12 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Set the event dispatcher instance.
      *
-     * @param \Illuminate\Contracts\Events\Dispatcher $events
-     *
+     * @param  \Illuminate\Contracts\Events\Dispatcher  $events
      * @return void
      */
     public function setDispatcher(Dispatcher $events)
     {
         $this->events = $events;
-    }
-
-    /**
-     * Get the user provider used by the guard.
-     *
-     * @return \Illuminate\Contracts\Auth\UserProvider
-     */
-    public function getProvider()
-    {
-        return $this->provider;
-    }
-
-    /**
-     * Set the user provider used by the guard.
-     *
-     * @param \Illuminate\Contracts\Auth\UserProvider $provider
-     *
-     * @return void
-     */
-    public function setProvider(UserProvider $provider)
-    {
-        $this->provider = $provider;
     }
 
     /**
@@ -436,9 +463,26 @@ class BasicGuard implements Guard, SupportsBasicAuth
     }
 
     /**
+     * Set the current user.
+     *
+     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
+     * @return $this
+     */
+    public function setUser(AuthenticatableContract $user)
+    {
+        $this->user = $user;
+
+        $this->loggedOut = false;
+
+        $this->fireAuthenticatedEvent($user);
+
+        return $this;
+    }
+
+    /**
      * Get the current request instance.
      *
-     * @return \Illuminate\Http\Request
+     * @return \Symfony\Component\HttpFoundation\Request
      */
     public function getRequest()
     {
@@ -448,8 +492,7 @@ class BasicGuard implements Guard, SupportsBasicAuth
     /**
      * Set the current request instance.
      *
-     * @param \Illuminate\Http\Request $request
-     *
+     * @param  \Symfony\Component\HttpFoundation\Request  $request
      * @return $this
      */
     public function setRequest(Request $request)
@@ -457,25 +500,5 @@ class BasicGuard implements Guard, SupportsBasicAuth
         $this->request = $request;
 
         return $this;
-    }
-
-    /**
-     * Get the last user we attempted to authenticate.
-     *
-     * @return \Illuminate\Contracts\Auth\Authenticatable
-     */
-    public function getLastAttempted()
-    {
-        return $this->lastAttempted;
-    }
-
-    /**
-     * Get a unique identifier for the auth session value.
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return 'login_'.$this->name.'_'.sha1(static::class);
     }
 }

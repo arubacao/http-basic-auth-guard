@@ -16,28 +16,17 @@ use Illuminate\Support\ServiceProvider;
 class BasicGuardServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
-    }
-
-    /**
      * Boot the authentication services for the application.
      *
      * @return void
      */
     public function boot()
     {
-        $this->app['auth']->extend('basic', function ($app, $name, array $config) {
-            $guard = new BasicGuard(
-                $name,
-                $app['auth']->createUserProvider($config['provider']),
-                $app['request']
-            );
+        $this->app['auth']->extend('basic', function ($app, $name, array $config)
+        {
+            $provider = $this->createUserProvider($config['provider'] ?? null);
+
+            $guard = new BasicGuard($name, $provider);
 
             if (method_exists($guard, 'setDispatcher')) {
                 $guard->setDispatcher($this->app['events']);
