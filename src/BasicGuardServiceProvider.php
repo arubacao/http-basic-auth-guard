@@ -22,8 +22,7 @@ class BasicGuardServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app['auth']->extend('basic', function ($app, $name, array $config)
-        {
+        $this->app['auth']->extend('basic', function ($app, $name, array $config) {
             $provider = $app['auth']->createUserProvider($config['provider'] ?? null);
 
             $guard = new BasicGuard($name, $provider);
