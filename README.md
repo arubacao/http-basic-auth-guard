@@ -21,8 +21,11 @@ Luckily, this package brings the usual functionality back!
 - **Note:** For Laravel 5.* or Lumen 5.1 HTTP Basic Auth still works out-of-the-box with the `session` driver: [Link](https://laravel.com/docs/5.2/authentication#stateless-http-basic-authentication).
 
 ## Tested with
-- Lumen **`5.2`**, **`5.3`**, **`5.4`**, **`5.5`**, **`5.6`**
+- Lumen **`5.2`**, **`5.3`**, **`5.4`**, **`5.5`**, **`5.6`**, **`5.7`**
 - PHP **`5.6`**, **`7.0`**, **`7.1`**, **`7.2`**, **`7.3`**  
+
+Current master is for Lumen >= `5.7`.
+Use version [`^1.0`](https://github.com/arubacao/http-basic-auth-guard/tree/1.0.4) for Lumen <= `5.6`. 
 
 ## Installation
 
